@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/jquery-3.4.1.js"></script>
+		
+	</head>
+
+	<body>
+		<span id="o1"></span>
+		<audio id="bgMusic" src="music/bgMuisc.mp3" loop="loop" controls="controls"></audio>
+		<div id="bg"style="position :absolute;left: 150px;top: 50px;">
+			<img id="bg1" class="aaa" src="img/bg1.png"style="position :absolute;left: 0px;top: 0px;" />
+			<!--<img id="bgF" class="aaa" src="img/clouds1.png"style="position :absolute;left: 0px;top: 0px;" />-->
+			<img id="bgM" class="aaa" src="img/pointy_mountains.png"style="position :absolute;left: 0px;top: 230px;"/>
+		</div>
+		<div id ="MapA" style="position: absolute;left: 0px;top: 0px;"></div>
+		<div id="heart" style="position: absolute;left: 150px;top: 50px;height: 45px;width: 180px;">
+			<img id="heart1"src="img/hud_heartFull.png" />
+			<img id="heart2"src="img/hud_heartFull.png" />
+			<img id="heart3"src="img/hud_heartFull.png" />
+		</div>
+		<img id="p1" src="img/p1站.png" style="position: absolute;left: 160px;top: 168px;" />
+		<div style="width:150px;height: 700px;left:0px;top:0px;position: absolute;z-index: 10;background-color: aliceblue;"></div>
+		<div style="width:200px;height: 700px;left:1340px;top:0px;position: absolute;z-index: 10;background-color: aliceblue;"></div>
+		<div style="width:1340px;height: 50px;left:0px;top:0px;position: absolute;z-index: 10;background-color: aliceblue;"></div>
+		<div style="width:1340px;height: 50px;left:0px;top:680px;position: absolute;z-index: 10;background-color: aliceblue;"></div>
+		<a href="index.html" id="nextMap" style="left:800px;top:300px;position: absolute;z-index: 13;display: none;">回到首页</a>
+		<img id="endImage" src="img/endIndex.png" style="position :absolute;left: 150px;top: 50px;z-index: 12;display: none;"><img />
+		
+		<!--<div id="p1HP" style="width: 100px;height: 10px;left: 10px;top:50px;position: absolute;background-color: red;"></div>-->
+	</body>
+
+</html>
+
+<script>
+	var bgMusic = document.getElementById("bgMusic");
+	var p1 = $("#p1");
+	var MapA = $("#MapA");
+//	var p1HeartLine = $("#heart")
+	var boxXS,grassEs,spikEs,torchaS,boxAs;
+	var p1Point = p1.offset();
+	var p1Fangxiang = 1; //0左1右
+//	var p1jiNengQiu;
+	var p1MoveSpeed = 5;
+	var p1Heart = 6;
+	var p1Heart1 = $("#heart1");
+	var p1Heart2 = $("#heart2")
+	var p1Heart3 = $("#heart3")
+	var p1Juese = 1	;//1绿2红3蓝
+	var p1JumpT = 2;
+	var p1IsHit = false;
+	var o1 = $("#o1");
+	var onMove = false;
+	var isWin = false;
+	var p1IsJump = false;
+	var p1IsDrop = false;
+	var p1IsDropLock = false;
+	var k_wLock = false;
+	var k_w = false;
+	var k_jLock = false;
+	var k_j = false;
+	var k_s = false;
+	var k_a = false;
+	var k_d = false;
+	var k_spa = false;
+	var k_spaLock = false;
+//	var i,j;
+	var BGMap =new Array();
+	BGMap[0] = new Array();
+	BGMap[1] = new Array();
+	BGMap[2] = new Array();
+	BGMap[3] = new Array();
+	BGMap[4] = new Array();
+	BGMap[5] = new Array();
+	BGMap[6] = new Array();
+	BGMap[7] = new Array();
+	BGMap[0]=[0,0,0,0,0,0,5,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	BGMap[1]=[0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	BGMap[2]=[0,0,0,0,0,0,5,5,5,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	BGMap[3]=[0,0,0,0,0,0,0,6,0,5,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	BGMap[4]=[0,0,0,0,0,0,0,5,0,0,5,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0];
+	BGMap[5]=[0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,5,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	BGMap[6]=[0,5,5,5,5,5,0,0,0,0,0,0,5,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	BGMap[7]=[3,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	BGMap[8]=[1,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,3,0,0,0,0,3,0,0,0,0,0,0,0,0,3,0,0,0,0];
+
+//animation11
+
+
+
+
+$(function(){makeMap();})
+	
+	function makeMap(){
+		for (i=0;i<9;i++) {
+			for (j=0;j<BGMap[i].length;j++) {
+				//alert("1");
+				var map1 = $("<img>");
+				map1.css("left",j*70+150+"px");
+				map1.css("top",i*70+50+"px");
+				switch (BGMap[i][j]){
+					case 1:
+					map1.attr("src","img/bg/chocoCenter.png");
+					map1.attr("class","soil");
+						break;
+					case 3:
+					map1.attr("src","img/bg/chocoMid.png");
+					map1.attr("class","grass");
+						break;
+					case 5:
+					map1.attr("src","img/bg/boxAlt.png");
+					map1.attr("class","boxX");
+						break;
+					case 6:
+					map1.attr("src","img/bg/boxExplosiveAlt.png");
+					map1.attr("class","boxA");
+						break;
+					case 7:
+					map1.attr("src","img/bg/torch.png");
+					map1.attr("class","torchas");
+						break;
+					case 9:
+					map1.attr("src","img/bg/spikes.png");
+					map1.attr("class","spikes");
+					map1.css("left",j*70+150+"px");
+					map1.css("top",i*70+50+35+"px");
+						break;
+					default:
+						break;
+				}
+				map1.attr("id","map"+i+"_"+j);
+				$("#MapA").append(map1);
+				map1.css("position","absolute");	
+				
+			}
+		}
+		torchaS = $(".torchas");
+		boxXS = $(".boxX");
+		grassEs = $(".grass");
+		spikEs = $(".spikes");
+		boxAs = $(".boxA")
+	}
+	$("body").keydown(function() {				//按键按下监听
+		//alert(event.keyCode);
+		switch(event.keyCode) {
+			case 65:
+				k_a = true;
+				break;
+			case 68:
+				k_d = true;
+				bgMusic.play();
+				break;
+			case 87:
+				k_w = true;
+				break;
+			case 83:
+				k_s = true;
+				break;
+			case 74:
+				k_j = true;
+				break
+			case 32:
+				k_spa = true;
+				break;
+			default:
+				break;
+		}
+	});
+	
+	
+
+	$("body").keyup(function() {				//按键抬起监听
+		//alert(event.keyCode);
+		switch(event.keyCode) {
+			case 65:
+				k_a = false;
+				p1StopMove()
+				break;
+			case 68:
+				k_d = false;
+				p1StopMove()
+				break;
+			case 87:
+				k_wLock = false;
+				k_w = false;
+				break;
+			case 83:
+				k_s = false;
+				break;
+			case 74:
+				k_j = false;
+				k_jLock = false;
+				break
+			case 32:
+				k_spa = false;
+				k_spaLock=false;
+				break;
+			default:
+				break;
+		}
+	});
+
+	var kbinput = setInterval(function() {		//定时检测移动
+//		o1.html(
+//		"w:"+k_w+" "+
+//		"s:"+k_s+" "+
+//		"a:"+k_a+" "+
+//		"d:"+k_d+" "+
+//		"spase:"+p1JumpT+" "+
+//		"p1"+p1IsJump+" "+
+//		" "+p1Point.left+" "+
+//		" "+p1Point.top+" "+
+//		"wLock"+k_wLock+" "+
+//		" "+MapA.offset().left+" ");
+	
+		//bgF.css("left",bgF.offset().left-1+"px");
+	
+			if(k_w == true) {
+				p1KeyJump();
+				k_wLock = true;
+			}
+			if(k_s == true) {
+				//moveD();
+			}
+			if(k_a == true) {
+				p1MoveL();
+			}
+			if(k_d == true) {
+				p1MoveR();
+			}
+			if (k_j == true) {
+				switch (p1Juese){
+					case 1:
+					p1SpeedUp();
+						break;
+					case 2:
+					p1Jineng();
+						break;
+					default:
+						break;
+				}
+//				p1SpeedUp();
+			}
+			if(k_spa == true) {
+				if (!k_spaLock) {
+					k_spaLock=true;
+					switch (p1Juese){
+					case 1:
+					p1Juese=2;
+						break;
+					case 2:
+					p1Juese=3;
+					p1JumpT = 3;
+						break;
+					case 3:
+					p1Juese=1;
+						break;
+					default:
+						break;
+					}
+					onMove=false;
+					if (p1Fangxiang!=0) {
+						switch (p1Juese){
+							case 1:
+							p1.attr("src","img/p1站.png")
+								break;
+							case 2:
+							p1.attr("src","img/p2站.png")
+								break;
+							case 3:
+							p1.attr("src","img/p3站.png")
+								break;
+							default:
+								break;
+							}
+					}else{
+						switch (p1Juese){
+							case 1:
+							p1.attr("src","img/p1站.png")
+								break;
+							case 2:
+							p1.attr("src","img/p2站.png")
+								break;
+							case 3:
+							p1.attr("src","img/p3站.png")
+								break;
+							default:
+								break;
+						}
+					}
+				}
+			}
+		}, 15);
+	var zhongli_diaoxue = setInterval(function(){
+		if (!p1IsJump&&!p1IsDrop&&!p1IsDropLock&&!(xiaPeng(p1,grassEs)||xiaPeng(p1,boxXS)||xiaPeng(p1,boxAs))) {
+			p1IsDrop=true;
+			p1IsDropLock=true;
+			var num = 0;
+			var p1ZhongliSpeed = 1;
+			var p1Zhongli = setInterval(function() { //重力
+				p1Point.top = p1Point.top + p1ZhongliSpeed;
+				p1.css("top", p1Point.top + "px");
+				
+				if (p1ZhongliSpeed<7) {
+					
+					num++;
+					//alert(num);
+					if (num>8) {
+				//alert("p1ZhongliSpeed");
+						num=0;
+						p1ZhongliSpeed+=1;
+					}
+				}
+				if(p1IsJump == true||(xiaPeng(p1,grassEs)||xiaPeng(p1,boxXS)||xiaPeng(p1,boxAs))) {
+					p1IsDrop=false;
+					p1IsDropLock=false;
+					clearInterval(p1Zhongli);
+					if (p1IsJump==false) {
+						if (p1Juese==3) {
+							p1JumpT=3
+						} else{
+							p1JumpT=2
+						}
+					}
+				}
+			}, 5)
+		}
+//
+		if (xiaPeng(p1,spikEs)) {
+			if (!p1IsHit) {
+				p1IsHit = true;
+				p1HeartChange(1);
+				
+				if (p1Fangxiang!=0) {
+					switch (p1Juese){
+						case 1:
+						p1.attr("src","img/p1受伤.png")
+							break;
+						case 2:
+						p1.attr("src","img/p2受伤.png")
+							break;
+						case 3:
+						p1.attr("src","img/p3受伤.png")
+							break;
+						default:
+							break;
+					}
+				}else{
+					switch (p1Juese){
+						case 1:
+						p1.attr("src","img/p1受伤反.png")
+							break;
+						case 2:
+						p1.attr("src","img/p2受伤反.png")
+							break;
+						case 3:
+						p1.attr("src","img/p3受伤反.png")
+							break;
+						default:
+							break;
+					}
+				}
+				onMove=true;
+				p1IsJump=true;
+				var p1HitJumpT = 40;
+				var p1HitJump = setInterval(function() { //重力
+					p1HitJumpT--;
+					if (!shangPeng(p1,boxXS)&&!shangPeng(p1,grassEs)&&!shangPeng(p1,boxAs)) {
+						p1Point.top = p1Point.top - 2;
+						p1.css("top", p1Point.top + "px");
+					}
+					if(p1HitJumpT==0) {
+						clearInterval(p1HitJump);
+						p1IsJump = false;
+						onMove = false;
+						if (p1Fangxiang==0) {
+							switch (p1Juese){
+								case 1:
+								p1.attr("src","img/p1站反.png")
+									break;
+								case 2:
+								p1.attr("src","img/p2站反.png")
+									break;
+								case 3:
+								p1.attr("src","img/p3站反.png")
+									break;
+								default:
+									break;
+							}							
+						} else{
+							switch (p1Juese){
+								case 1:
+								p1.attr("src","img/p1站.png")
+									break;
+								case 2:
+								p1.attr("src","img/p2站.png")
+									break;
+								case 3:
+								p1.attr("src","img/p3站.png")
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				}, 5)
+				setTimeout(function(){
+					p1IsHit=false;
+					onMove=false;
+					p1IsJump=false;
+				},500)
+			} 	
+		}
+		if (xiaPeng(p1,torchaS)) {
+			for (var i=0;i<torchaS.length;i++) {
+				if (xiap(p1,$("#"+torchaS[i].id))) {
+					$("#"+torchaS[i].id).attr("src","img/bg/tochLit.gif");
+				}
+			}
+		}
+		if (checkFire()&&!isWin) {
+			//alert("您赢了!")
+			$("#endImage").css("display","block");
+			isWin=true;
+			$("#nextMap").css("display","block");
+		}
+		
+		if (p1.offset().top>700) {
+			p1HeartChange(1);
+			p1Point.top = -100;
+			p1.css("top", p1Point.top + "px");
+			
+		}
+	},25);
+	
+	function checkFire(){
+		for(var i = 0;i<torchaS.length;i++){
+			if ($("#"+torchaS[i].id).attr("src")=="img/bg/torch.png"){
+					return false;
+				}
+			}
+			return true;
+		}
+	
+	function p1HeartChange(num){
+		p1Heart-=num;
+		switch (p1Heart){
+			case 0:
+			p1Heart1.attr("src","img/hud_heartEmpty.png");
+			p1Heart2.attr("src","img/hud_heartEmpty.png");
+			p1Heart3.attr("src","img/hud_heartEmpty.png");
+				break;
+			case 1:
+			p1Heart1.attr("src","img/hud_heartHalf.png");
+			p1Heart2.attr("src","img/hud_heartEmpty.png");
+			p1Heart3.attr("src","img/hud_heartEmpty.png");
+				break;
+			case 2:
+			p1Heart1.attr("src","img/hud_heartFull.png");
+			p1Heart2.attr("src","img/hud_heartEmpty.png");
+			p1Heart3.attr("src","img/hud_heartEmpty.png");
+				break;
+			case 3:
+			p1Heart1.attr("src","img/hud_heartFull.png");
+			p1Heart2.attr("src","img/hud_heartHalf.png");
+			p1Heart3.attr("src","img/hud_heartEmpty.png");
+				break;
+			case 4:
+			p1Heart1.attr("src","img/hud_heartFull.png");
+			p1Heart2.attr("src","img/hud_heartFull.png");
+			p1Heart3.attr("src","img/hud_heartEmpty.png");
+				break;
+			case 5:
+			p1Heart1.attr("src","img/hud_heartFull.png");
+			p1Heart2.attr("src","img/hud_heartFull.png");
+			p1Heart3.attr("src","img/hud_heartHalf.png");
+				break;
+			case 6:
+			p1Heart1.attr("src","img/hud_heartFull.png");
+			p1Heart2.attr("src","img/hud_heartFull.png");
+			p1Heart3.attr("src","img/hud_heartFull.png");
+				break;
+			default:
+				break;
+		}
+		if(p1Heart==0&&!isWin){
+					alert("您输了!但是您可以继续体验!");
+				}
+	}
+
+	function p1SpeedUp(){
+		if (!k_jLock) {
+			k_jLock = true;
+			var fart = $("<img>")
+			fart.css("position","absolute");
+			var piGensui=setInterval(function(){
+				if (p1Fangxiang==0) {	
+				fart.attr("src","img/屁反.png");
+				fart.css("left",p1Point.left+70+"px");
+				fart.css("top",p1Point.top+30+"px");
+			}else{
+				fart.attr("src","img/屁.png");
+				fart.css("left",p1Point.left-120+"px");
+				fart.css("top",p1Point.top+30+"px");
+			}
+			$("body").append(fart);
+			p1MoveSpeed = 13;
+
+			},10)
+			setTimeout(function(){
+				p1MoveSpeed = 5;
+				clearInterval(piGensui);
+				fart.remove();
+			},300)
+		}
+	}
+	
+	
+	function p1Jineng(){
+			if (!k_jLock) {
+				k_jLock = true;
+				var p1jiNengQiu = $("<img>")
+				p1jiNengQiu.css("position","absolute");
+				if (p1Fangxiang==1) {	
+					p1jiNengQiu.attr("src","img/fireball.gif");
+					p1jiNengQiu.css("left",p1Point.left+70+"px");
+					p1jiNengQiu.css("top",p1Point.top+30+"px");
+				}else{
+					p1jiNengQiu.attr("src","img/fireball.gif");
+					p1jiNengQiu.css("left",p1Point.left-20+"px");
+					p1jiNengQiu.css("top",p1Point.top+30+"px");
+				}
+				$("body").append(p1jiNengQiu);
+				var p1jiNengMove = setInterval(function(){
+					//alert(boxAs.length);
+					if (xiaPeng(p1jiNengQiu,torchaS)){
+						for (var i=0;i<torchaS.length;i++) {
+							if (xiap(p1jiNengQiu,$("#"+torchaS[i].id))) {
+								$("#"+torchaS[i].id).attr("src","img/bg/tochLit.gif");
+							clearInterval(p1jiNengMove);
+							p1jiNengQiu.remove();
+							}
+						}
+					}else if(xiaPeng(p1jiNengQiu,boxAs)){
+						for (var i=0;i<boxAs.length;i++) {
+							if (xiap(p1jiNengQiu,$("#"+boxAs[i].id))) {
+								var fireBox=$("#"+boxAs[i].id);
+								fireBox.attr("src","img/bg/boxBoom.gif");
+								clearInterval(p1jiNengMove);
+								p1jiNengQiu.remove();
+								fireBox.css("top","-500px");
+							}
+						}
+					}else{
+						if (p1Fangxiang!=0) {
+							p1jiNengQiu.css("left",p1jiNengQiu.offset().left+9+"px");
+						} else{
+							p1jiNengQiu.css("left",p1jiNengQiu.offset().left-9+"px");
+						}
+					}
+					if (p1jiNengQiu.offset().left>1400||p1jiNengQiu.offset().left<-50) {
+						p1jiNengQiu.remove();
+						clearInterval(p1jiNengMove);
+					}
+				},5);
+			}
+		}	
+	function mapMove() {
+		var MapAPoint = MapA.offset();
+		MapA.css("left",MapAPoint.left-10+"px");
+	}
+	
+	function p1StopMove(){						//停止移动站立图片
+		onMove=false;
+		if (p1IsJump==false) {
+			if (p1Fangxiang==0) {
+				switch (p1Juese){
+					case 1:
+					p1.attr("src","img/p1站反.png")
+						break;
+					case 2:
+					p1.attr("src","img/p2站反.png")
+						break;
+					case 3:
+					p1.attr("src","img/p3站反.png")
+						break;
+					default:
+						break;
+				}
+			}else{
+				switch (p1Juese){
+					case 1:
+					p1.attr("src","img/p1站.png")
+						break;
+					case 2:
+					p1.attr("src","img/p2站.png")
+						break;
+					case 3:
+					p1.attr("src","img/p3站.png")
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+	
+	function p1MoveR()							//右移动
+	{
+		var moveTime =10;
+		p1Fangxiang=1;
+		//alert(grassEs.length)
+		if (p1IsJump==false)
+		{
+			if (onMove == false) 
+			{
+				onMove = true;
+				switch (p1Juese){
+					case 1:
+					p1.attr("src","img/p1走.gif")
+						break;
+					case 2:
+					p1.attr("src","img/p2走.gif")
+						break;
+					case 3:
+					p1.attr("src","img/p3走.gif")
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		if (!youPeng(p1,boxXS)&&!youPeng(p1,grassEs)&&!youPeng(p1,boxAs)) {
+			if (p1Point.left<1270) {
+				if (p1Point.left<870||(MapA.offset().left<=-(BGMap[7].length*70-1190))) {
+					p1Point.left=p1Point.left+p1MoveSpeed;
+					p1.css("left",p1Point.left+"px");
+				} else{
+					var MapAPoint = MapA.offset();
+					MapA.css("left",MapAPoint.left-p1MoveSpeed+"px");
+				}
+			}
+		}
+		
+
+	}
+	function p1MoveL()							//左移动
+	{
+		p1Fangxiang=0;
+		if (p1IsJump==false)
+		{
+			if (onMove == false) 
+			{
+				onMove = true;
+				switch (p1Juese){
+					case 1:
+					p1.attr("src","img/p1走反.gif")
+						break;
+					case 2:
+					p1.attr("src","img/p2走反.gif")
+						break;
+					case 3:
+					p1.attr("src","img/p3走反.gif")
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		
+		if (!zuoPeng(p1,boxXS)&&!zuoPeng(p1,grassEs)&&!zuoPeng(p1,boxAs)) {
+			if (p1Point.left>150)
+			{
+				if (p1Point.left>550||MapA.offset().left>=0) {
+					p1Point.left=p1Point.left-p1MoveSpeed;
+					p1.css("left",p1Point.left+"px");
+				} else{
+					var MapAPoint = MapA.offset();
+					MapA.css("left",MapAPoint.left+p1MoveSpeed+"px");
+				}
+			}		
+		}
+		
+		
+	}
+	function p1Jump(jumpT)
+	{		
+		if (p1JumpT>0) {		
+			if (!p1IsJump) {
+				p1IsJump = true;
+				if (p1Fangxiang==0) {
+					
+					switch (p1Juese){
+						case 1:
+						p1.attr("src","img/p1跳反.png")
+							break;
+						case 2:
+						p1.attr("src","img/p2跳反.png")
+							break;
+						case 3:
+						p1.attr("src","img/p3跳反.png")
+							break;
+						default:
+							break;
+					}
+				} else{
+					switch (p1Juese){
+						case 1:
+						p1.attr("src","img/p1跳.png")
+							break;
+						case 2:
+						p1.attr("src","img/p2跳.png")
+							break;
+						case 3:
+						p1.attr("src","img/p3跳.png")
+							break;
+						default:
+							break;
+					}
+				}
+			}
+			var num = 0;
+				if(!k_wLock) {//p1IsJump == false||
+					var p1JumpSpeed = 7;
+					p1JumpT--;
+					var p1JumpI = setInterval(function() { //重力
+						jumpT--;
+						if (!shangPeng(p1,boxXS)&&!shangPeng(p1,grassEs)&&!shangPeng(p1,boxAs)) {
+							p1Point.top = p1Point.top - p1JumpSpeed;
+							p1.css("top", p1Point.top + "px");
+							
+							if (p1JumpSpeed>1) {
+								
+								num++;
+								//alert(num);
+								if (num>5) {
+									//alert("p1ZhongliSpeed");
+									num=0;
+									p1JumpSpeed-=1;
+								}
+							}//
+						}
+	
+						if(jumpT==0||k_wLock==false) {
+							clearInterval(p1JumpI);
+							p1IsJump = false;
+							onMove = false;
+							if (p1Fangxiang==0) {
+								switch (p1Juese){
+									case 1:
+									p1.attr("src","img/p1站反.png")
+										break;
+									case 2:
+									p1.attr("src","img/p2站反.png")
+										break;
+									case 3:
+									p1.attr("src","img/p3站反.png")
+										break;
+									default:
+										break;
+								}
+							} else{
+								switch (p1Juese){
+									case 1:
+									p1.attr("src","img/p1站.png")
+										break;
+									case 2:
+									p1.attr("src","img/p2站.png")
+										break;
+									case 3:
+									p1.attr("src","img/p3站.png")
+										break;
+									default:
+										break;
+								}
+							}
+						}
+					}, 5)
+				}
+			
+			
+	//		var jumpT1 = 22;
+	//		var jumpT2 = 15;
+	//		var jumpT3 = 10;
+	//		
+	//		var jumpingT1 = setInterval(function(){
+	//			p1Point.top=p1Point.top-3;
+	//			p1.css("top",p1Point.top+"px");
+	//			jumpT1--;
+	//			if (jumpT1==0) {
+	//				clearInterval(jumpingT1);
+	//				}		
+	//			},5)
+	//		
+	//		var jumpingT2 = setInterval(function(){
+	//			p1Point.top=p1Point.top-3;
+	//			p1.css("top",p1Point.top+"px");
+	//			jumpT2--;
+	//			if (jumpT2==0||(k_wLock==false)) {
+	//				clearInterval(jumpingT2);
+	//				//p1IsJump = false;
+	//				}		
+	//			},20)
+	//			
+	//		var jumpingT3 = setInterval(function(){
+	//			p1Point.top=p1Point.top-3;
+	//			p1.css("top",p1Point.top+"px");
+	//			jumpT3--;
+	//			if (jumpT3==0||(k_wLock==false)) {
+	//				clearInterval(jumpingT3);
+	//				p1IsJump = false;
+	//				zhongLi();
+	//				}		
+	//			},30);
+		
+			}
+	}
+	function p1KeyJump()								//跳跃三阶段
+	{
+		if (k_wLock == false)
+		{
+			//alert("我跳了一次");
+			p1Jump(60);
+			//zhongLi();
+		}
+	}		
+	
+	
+	//右碰撞方法
+	function youp(hero,block){
+		//获取坐标
+		var zuobiao = hero.offset();
+		var zuobiao1 = block.offset();
+		//判断
+		//人物的左+人物的宽           石头的左
+		if(zuobiao.left+hero.width()>=zuobiao1.left&&
+		zuobiao.top+hero.height()>=zuobiao1.top+15&&
+		zuobiao1.top+block.height()>=zuobiao.top+15&&
+		zuobiao1.left+block.width()>=zuobiao.left+15){
+			return  true;
+		}else{
+			return  false;
+		}
+	}
+	//左碰方法
+	function  zuop(hero,block){
+		//获取坐标
+		var zuobiao = hero.offset();
+		var zuobiao1 = block.offset();
+		if(zuobiao.left<=zuobiao1.left+block.width()&&
+		zuobiao.top+hero.height()>=zuobiao1.top+15&&
+		zuobiao1.top+block.height()>=zuobiao.top+15&&
+		zuobiao.left+hero.width()>=zuobiao1.left+15){
+			return  true;
+		}else {
+			return  false;
+		}
+	}
+	
+	//上碰方法
+	function  shangp(hero,block){
+		//获取坐标
+		var zuobiao = hero.offset();
+		var zuobiao1 = block.offset();
+		if(zuobiao1.top+block.height()>=zuobiao.top&&
+		zuobiao.left+hero.width()>=zuobiao1.left+15&&
+		zuobiao1.left+block.width()>=zuobiao.left+15&&
+		zuobiao.top+hero.height()>=zuobiao1.top+15){
+			return  true;
+		}else{
+			return  false;
+		}
+	}
+	
+		//下碰方法
+	function  xiap(hero,block){
+		//获取坐标
+		var zuobiao = hero.offset();
+		var zuobiao1 = block.offset();
+		if(zuobiao.top+hero.height()>=zuobiao1.top&&
+		zuobiao.left+hero.width()>=zuobiao1.left+15&&
+		zuobiao1.left+block.width()>=zuobiao.left+15&&
+		zuobiao1.top+block.height()>=zuobiao.top+15){
+			return  true;
+		}else{
+			return  false;
+		}
+	}
+	
+	function youPeng(hero,block){
+		for (var i = 0;i<block.length;i++) {
+			if (youp(hero,block[i])) {
+				return 0;
+			} else{
+				return 1;
+			}
+		}
+	}
+	
+	function youPeng(hero,blocks){
+		for (var i=0;i<blocks.length;i++) {
+			if (youp(hero,$("#"+blocks[i].id))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	function zuoPeng(hero,blocks){
+		for (var i=0;i<blocks.length;i++) {
+			if (zuop(hero,$("#"+blocks[i].id))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	function shangPeng(hero,blocks){
+		for (var i=0;i<blocks.length;i++) {
+			if (shangp(hero,$("#"+blocks[i].id))) {
+				return true;
+			} 
+		}
+			return false;
+	}
+	function xiaPeng(hero,blocks){
+		for (var i=0;i<blocks.length;i++) {
+			if (xiap(hero,$("#"+blocks[i].id))) {
+				return true;
+			}
+		}
+		return false;
+	}
+</script>
